@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/userUpdate.json",
+    "type": "object",
+    "properties": {
+        "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "description": "The username of the user, must be 1-30 characters long and can only contain letters, numbers, and underscores."
+        },
+        "password": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 40,
+            "pattern": "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$",
+            "description": "The password of the user, must be 5-40 characters long and contain at least one letter and one number."
+        }
+    },
+    "required": [
+        "username",
+        "password"
+    ],
+    "additionalProperties": false
+}

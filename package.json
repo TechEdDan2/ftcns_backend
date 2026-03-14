@@ -1,0 +1,40 @@
+{
+  "name": "ftcns-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for the FTC Note Scout app. It is built using Node.js and Express.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "db:init": "psql -f ftcns.sql",
+    "seed-teams": "node bin/bootstrapTeams.js",
+    "test": "jest --watchAll --no-cache"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules",
+      "config.js"
+    ]
+  },
+  "keywords": [],
+  "author": "DNel2",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonschema": "^1.5.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "pg": "^8.20.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  }
+}

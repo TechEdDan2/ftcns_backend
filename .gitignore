@@ -1,0 +1,29 @@
+# This .gitignore file is for a Node.js backend project. It ignores the following files and directories:
+node_modules/
+
+# Ignore environment variable files which may contain sensitive information
+.env
+
+# Ignore Config files which may contain sensitive information
+config.js
+config.test.js
+
+# Ignore macOS system files
+._*
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+logs/
+*.log
+
+# Build, Output directories, and coverage reports
+dist/
+build/
+coverage/
+
+# Ignore the ftcns-seed.sql file which may contain sensitive data
+ftcns-seed.sql
+
+# Ignore the encodeApiKey.js file which may contain sensitive information
+eak.js

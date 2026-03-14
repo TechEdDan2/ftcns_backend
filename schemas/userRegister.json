@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "User Registration",
+    "type": "object",
+    "required": [
+        "username",
+        "email",
+        "password"
+    ],
+    "properties": {
+        "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "description": "Unique username containing letters, numbers, or underscores."
+        },
+        "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Password with at least 8 characters."
+        }
+    },
+    "additionalProperties": false
+}

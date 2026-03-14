@@ -1,0 +1,27 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://example.com/userAuth.schema.json",
+    "title": "User Authentication Schema",
+    "description": "Schema for user authentication data",
+    "type": "object",
+    "properties": {
+        "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "pattern": "^[a-zA-Z0-9_]+$",
+            "description": "The username of the user, must be 3-30 characters long and can only contain letters, numbers, and underscores."
+        },
+        "password": {
+            "type": "string",
+            "minLength": 8,
+            "pattern": "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$",
+            "description": "The password must contain at least one letter and one number, and be at least 8 characters long."
+        }
+    },
+    "required": [
+        "username",
+        "password"
+    ],
+    "additionalProperties": false
+}
