@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "team_number",
+        "event_code",
+        "scout_id",
+        "note_title",
+        "note_text"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the note"
+        },
+        "team_number": {
+            "type": "integer",
+            "description": "Team number associated with the note"
+        },
+        "event_code": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Event code identifier"
+        },
+        "scout_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the scout who created the note"
+        },
+        "note_title": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Title of the note"
+        },
+        "note_text": {
+            "type": "string",
+            "description": "Content of the note"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the note was created"
+        }
+    },
+    "additionalProperties": false
+}

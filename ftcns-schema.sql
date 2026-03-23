@@ -12,7 +12,7 @@ CREATE TABLE events (
     is_active BOOLEAN DEFAULT TRUE     -- Helpful for filtering current tournaments
 );
 
--- 2. TEAMS: Stores general team info and season performance snapshots
+-- 2. TEAMS: Stores general team info from FTC API  
 CREATE TABLE teams (
     team_number INTEGER PRIMARY KEY,
     team_name VARCHAR(255) NOT NULL,

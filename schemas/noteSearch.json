@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/schemas/noteSearch.json",
+    "title": "Note Search",
+    "description": "Schema for searching notes",
+    "type": "object",
+    "properties": {
+        "teamNumber": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "event": {
+            "type": "string",
+            "minLength": 1
+        },
+        "scout": {
+            "type": "string",
+            "minLength": 1
+        }
+    },
+    "required": [],
+    "additionalProperties": false
+}

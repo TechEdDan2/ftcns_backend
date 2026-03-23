@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "example": {
+        "note_title": "Great Performance",
+        "note_text": "The team performed exceptionally well in the last match, showing great teamwork and strategy."
+    },
+    "properties": {
+        "note_title": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Title of the note"
+        },
+        "note_text": {
+            "type": "string",
+            "description": "Content of the note"
+        }
+    },
+    "minProperties": 1,
+    "additionalProperties": false,
+    "required": []
+}
