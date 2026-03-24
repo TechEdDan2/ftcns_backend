@@ -5,7 +5,7 @@ const jsonschema = require("jsonschema");
 const express = require('express');
 
 const { BadRequestError } = require("../expressError");
-const { ensureLoggedIn, ensureRole, ensureAdminOrSelf } = require("../middleware/auth");
+const { ensureRole, ensureAdminOrSelf, authenticateJWT } = require("../middleware/auth");
 
 const Note = require("../models/note");
 const noteNewSchema = require("../schemas/noteNew.json");
@@ -14,7 +14,7 @@ const noteUpdateSchema = require("../schemas/noteUpdate.json");
 const router = express.Router();
 
 // GET /notes - get all notes
-router.get('/', ensureLoggedIn, async (req, res, next) => {
+router.get('/', authenticateJWT, async (req, res, next) => {
     try {
         const notes = await Note.findAll();
         return res.json({ notes });
@@ -24,7 +24,7 @@ router.get('/', ensureLoggedIn, async (req, res, next) => {
 });
 
 // GET /notes/:id - get note by id
-router.get('/:id', ensureLoggedIn, async (req, res, next) => {
+router.get('/:id', authenticateJWT, async (req, res, next) => {
     try {
         const note = await Note.findById(req.params.id);
         if (!note) {
@@ -37,7 +37,7 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
 });
 
 // GET /notes/team/:team_number - get all notes for a team
-router.get('/team/:team_number', ensureLoggedIn, async (req, res, next) => {
+router.get('/team/:team_number', authenticateJWT, async (req, res, next) => {
     try {
         const notes = await Note.findByTeam(req.params.team_number);
         return res.json({ notes });

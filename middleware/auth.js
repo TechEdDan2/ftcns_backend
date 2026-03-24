@@ -17,9 +17,12 @@ const { UnauthorizedError } = require("../expressError");
 function authenticateJWT(req, res, next) {
     try {
         const authHeader = req.headers && req.headers.authorization;
+        // console.log("Authorization Header:", authHeader); // Log the header
         if (authHeader) {
             const token = authHeader.replace(/^[Bb]earer /, "").trim();
+            // console.log("Token:", token); // Log the token
             res.locals.user = jwt.verify(token, SECRET_KEY);
+            // console.log("Decoded User:", res.locals.user); // Log the decoded user
         }
         return next();
     } catch (err) {
@@ -27,37 +30,6 @@ function authenticateJWT(req, res, next) {
     }
 }
 
-/** Middleware to use when they must be logged in.
- *
- * If not, raises Unauthorized.
- */
-
-function ensureLoggedIn(req, res, next) {
-    try {
-        if (!res.locals.user) throw new UnauthorizedError();
-        return next();
-    } catch (err) {
-        return next(err);
-    }
-}
-
-/**
- * Middleware to check if the user is an administrator.
- *
- * If not, raises Unauthorized.
- */
-// function ensureAdmin(req, res, next) {
-//     try {
-//         // Check the response locals for the user and their admin status
-//         if (!res.locals.user || !res.locals.user.isAdmin) {
-//             throw new UnauthorizedError();
-//         }
-//         return next();
-
-//     } catch (err) {
-//         return next(err);
-//     }
-// }
 
 /**
  * Middleware to verify if a user has a specific role.
@@ -106,7 +78,6 @@ function ensureAdminOrSelf(req, res, next) {
 
 module.exports = {
     authenticateJWT,
-    ensureLoggedIn,
     ensureRole,
     ensureAdminOrSelf,
 };

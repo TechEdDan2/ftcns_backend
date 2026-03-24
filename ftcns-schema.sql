@@ -21,17 +21,17 @@ CREATE TABLE teams (
 
 -- 3. EVENT_TEAMS: Bridge table (Many-to-Many) 
 -- Populated by fetching the team list for a specific event
-CREATE TABLE event_teams (
-    event_code VARCHAR(50) REFERENCES events(event_code) ON DELETE CASCADE,
-    team_number INTEGER REFERENCES teams(team_number) ON DELETE CASCADE,
-    -- Performance snapshot update with sync from FTC API
-    event_rank INTEGER,
-    wins INTEGER DEFAULT 0,
-    losses INTEGER DEFAULT 0,
-    ties INTEGER DEFAULT 0,
-    last_api_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (event_code, team_number)
-);
+-- CREATE TABLE event_teams (
+--     event_code VARCHAR(50) REFERENCES events(event_code) ON DELETE CASCADE,
+--     team_number INTEGER REFERENCES teams(team_number) ON DELETE CASCADE,
+--     -- Performance snapshot update with sync from FTC API
+--     event_rank INTEGER,
+--     wins INTEGER DEFAULT 0,
+--     losses INTEGER DEFAULT 0,
+--     ties INTEGER DEFAULT 0,
+--     last_api_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     PRIMARY KEY (event_code, team_number)
+-- );
 
 -- 4. USERS: App users (Admins and Scouts)
 CREATE TABLE users (
@@ -48,12 +48,11 @@ CREATE TABLE notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     team_number INTEGER NOT NULL,
     event_code VARCHAR(50) NOT NULL,
-    scout_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    username VARCHAR(50) NOT NULL,
     note_title VARCHAR(255) NOT NULL,
     note_text TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- This ensures the team and event combo is valid according to THE bridge table
-    FOREIGN KEY (event_code, team_number) 
-        REFERENCES event_teams(event_code, team_number) 
-        ON DELETE CASCADE
+    FOREIGN KEY (team_number) REFERENCES teams(team_number) ON DELETE CASCADE,
+    FOREIGN KEY (event_code) REFERENCES events(event_code) ON DELETE CASCADE,
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
