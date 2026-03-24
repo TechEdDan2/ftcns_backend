@@ -20,10 +20,12 @@ app.use(morgan("tiny")); // logging system
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const noteRoutes = require("./routes/notes");
+const eventRoutes = require("./routes/events");
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/notes", noteRoutes);
+app.use("/events", eventRoutes);
 
 
 // Basic route for testing
