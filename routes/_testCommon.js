@@ -15,8 +15,8 @@ async function commonBeforeAll() {
 
     await db.query(`
         INSERT INTO users (username, password_hash)
-        VALUES ('u1', $1),
-               ('u2', $2)
+        VALUES ('user1', $1),
+               ('user2', $2)
         RETURNING id`,
         [
             await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
@@ -24,14 +24,7 @@ async function commonBeforeAll() {
         ]
     );
 
-    const results = await db.query(`
-        INSERT INTO notes (team_number, event_code, scout_id, note_title, note_text)
-        VALUES (1234, 'EVT1', 1, 'Note 1', 'This is the first note.'),
-               (1234, 'EVT1', 2, 'Note 2', 'This is the second note.'),
-               (5678, 'EVT2', 1, 'Note 3', 'This is the third note.')
-        RETURNING id`
-    );
-    testNoteIds.splice(0, testNoteIds.length, ...results.rows.map(r => r.id));
+
 }
 
 async function commonBeforeEach() {

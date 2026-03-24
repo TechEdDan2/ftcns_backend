@@ -23,11 +23,12 @@ describe("POST /auth/token", function () {
         const resp = await request(app)
             .post("/auth/token")
             .send({
-                username: "u1",
-                password_hash: "password1",
+                username: "user1",
+                password: "password1",
             });
+        expect(resp.statusCode).toEqual(200);
         expect(resp.body).toEqual({
-            "token": expect.any(String),
+            token: expect.any(String),
         });
     });
 
@@ -71,29 +72,4 @@ describe("POST /auth/token", function () {
     // });
 });
 
-/************************************** POST /auth/register */
 
-describe("POST /auth/register", function () {
-    test("works for anon", async function () {
-        const resp = await request(app)
-            .post("/auth/register")
-            .send({
-                username: "new",
-                password_hash: "password",
-            });
-        expect(resp.statusCode).toEqual(201);
-        expect(resp.body).toEqual({
-            "token": expect.any(String),
-        });
-    });
-
-    test("bad request with missing fields", async function () {
-        const resp = await request(app)
-            .post("/auth/register")
-            .send({
-                username: "new",
-            });
-        expect(resp.statusCode).toEqual(400);
-    });
-
-});

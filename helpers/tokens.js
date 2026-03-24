@@ -7,7 +7,7 @@ function createToken(user) {
     console.assert
     let payload = {
         username: user.username,
-        isAdmin: user.isAdmin || false,
+        role: user.role || null,
     };
 
     return jwt.sign(payload, SECRET_KEY);

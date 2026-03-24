@@ -35,9 +35,8 @@ class User {
         // try to find the user first
         const result = await db.query(
             `SELECT username,
-                  password,
-                  role,
-                  is_admin AS "isAdmin"
+                  password_hash AS password,
+                  role
            FROM users
            WHERE username = $1`,
             [username],
@@ -46,7 +45,7 @@ class User {
         const user = result.rows[0];
 
         if (user) {
-            // compare hashed password to a new hash from password
+            // compare hashed password to stored hash
             const isValid = await bcrypt.compare(password, user.password);
             if (isValid === true) {
                 delete user.password;
@@ -78,7 +77,7 @@ class User {
      * @throws {BadRequestError} If the username is a duplicate.
      */
 
-    static async register({ username, password, role = 'scout', isAdmin = false }) {
+    static async register({ username, password, role = 'scout' }) {
         // Check for duplicate username
         const duplicateCheck = await db.query(
             `SELECT username
@@ -97,20 +96,17 @@ class User {
         // Insert the new user into the database
         const result = await db.query(
             `INSERT INTO users
-             (id, username, password_hash, role, is_admin)
-             VALUES (gen_random_uuid(), $1, $2, $3, $4)
-             RETURNING id, username, role, is_admin AS "isAdmin", created_at AS "createdAt"`,
+             (id, username, password_hash, role)
+             VALUES (gen_random_uuid(), $1, $2, $3)
+             RETURNING id, username, role, created_at AS "createdAt"`,
             [
                 username,
                 hashedPassword,
                 role,
-                isAdmin,
             ],
         );
 
-        const user = result.rows[0];
-
-        return user;
+        return result.rows[0];
     }
 
     /** Find all users.
@@ -124,8 +120,7 @@ class User {
     static async findAll() {
         const result = await db.query(
             `SELECT username,
-                  role,
-                  is_admin AS "isAdmin"
+                  role
            FROM users
            ORDER BY username`,
         );
@@ -151,8 +146,7 @@ class User {
     static async get(username) {
         const userRes = await db.query(
             `SELECT username,
-                  role,
-                  is_admin AS "isAdmin"
+                  role
            FROM users
            WHERE username = $1`,
             [username],
@@ -208,16 +202,14 @@ class User {
             data,
             {
                 role: "role",
-                isAdmin: "is_admin",
             });
         const usernameVarIdx = "$" + (values.length + 1);
 
         const querySql = `UPDATE users 
-                      SET ${setCols} 
-                      WHERE username = ${usernameVarIdx} 
-                      RETURNING username,
-                                role,
-                                is_admin AS "isAdmin"`;
+                  SET ${setCols} 
+                  WHERE username = ${usernameVarIdx} 
+                  RETURNING username,
+                    role`;
         const result = await db.query(querySql, [...values, username]);
         const user = result.rows[0];
 

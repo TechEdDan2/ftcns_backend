@@ -9,8 +9,14 @@ const { createToken } = require("../helpers/tokens");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const userAuthSchema = require("../schemas/userAuth.json");
+const userRegisterSchema = require("../schemas/userRegister.json");
 
-/** POST /auth/token:  { username, password } => { token }
+/** 
+ * POST /auth/token:  { username, password } => { token }
+ * 
+ *  This route is for logging in. It checks the username and password, 
+ *      and if valid, returns a JWT token which can be used to authenticate 
+ *      further requests.
  * 
  * Returns JWT token which can be used to authenticate further requests.
  * 
@@ -51,7 +57,7 @@ router.post("/register", async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const newUser = await User.register({ ...req.body, isAdmin: false });
+        const newUser = await User.register({ ...req.body });
         const token = createToken(newUser);
         return res.status(201).json({ token });
     } catch (err) {

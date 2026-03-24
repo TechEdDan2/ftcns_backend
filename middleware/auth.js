@@ -9,8 +9,7 @@ const { UnauthorizedError } = require("../expressError");
 
 /** Middleware: Authenticate user.
  *
- * If a token was provided, verify it, and, if valid, store the token payload
- * on res.locals (this will include the username and isAdmin field.)
+ * If a token was provided, verify it, and, if valid, store the token payload 
  *
  * It's not an error if no token was provided or if the token is not valid.
  */
@@ -94,7 +93,8 @@ function ensureAdminOrSelf(req, res, next) {
     try {
         // Check the response locals for the user and their admin status or username match
         const user = res.locals.user;
-        if (!(user?.isAdmin || user?.username === req.params.username)) {
+        if (!user) throw new UnauthorizedError();
+        if (!(user?.role === 'admin' || user?.username === req.params.username)) {
             throw new UnauthorizedError();
         }
         return next();

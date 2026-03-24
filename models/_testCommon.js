@@ -18,14 +18,12 @@ async function commonBeforeAll() {
         username: "scout1",
         password: "password1",
         role: "scout",
-        isAdmin: false,
     });
 
     await User.register({
         username: "scout2",
         password: "password2",
         role: "scout",
-        isAdmin: false,
     });
 
     const note1 = await Note.create({

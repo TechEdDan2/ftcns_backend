@@ -47,7 +47,7 @@ router.get('/team/:team_number', ensureLoggedIn, async (req, res, next) => {
 });
 
 // POST /notes - create a new note
-router.post('/', ensureLoggedIn, async (req, res, next) => {
+router.post('/', ensureAdminOrSelf, async (req, res, next) => {
     try {
         const validator = jsonschema.validate(req.body, noteNewSchema);
         if (!validator.valid) {

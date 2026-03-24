@@ -4,7 +4,7 @@
     "required": [
         "team_number",
         "event_code",
-        "scout_id",
+        "username",
         "note_title",
         "note_text"
     ],
@@ -23,10 +23,10 @@
             "maxLength": 50,
             "description": "Event code identifier"
         },
-        "scout_id": {
+        "username": {
             "type": "string",
-            "format": "uuid",
-            "description": "UUID of the scout who created the note"
+            "maxLength": 30,
+            "description": "Username of the scout who created the note"
         },
         "note_title": {
             "type": "string",
