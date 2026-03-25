@@ -5,9 +5,10 @@ const jsonschema = require("jsonschema");
 const express = require('express');
 
 const { BadRequestError } = require("../expressError");
+const { authenticateJWT, ensureRole } = require("../middleware/auth");
+
 const Team = require("../models/team");
-const teamNewSchema = require("../schemas/teamNew.json");
-const teamUpdateSchema = require("../schemas/teamUpdate.json");
+
 
 
 const router = express.Router();
@@ -16,48 +17,79 @@ const router = express.Router();
 let teams = [];
 
 // GET all teams
-router.get('/', (req, res) => {
-    res.json(teams);
+router.get('/', authenticateJWT, async (req, res, next) => {
+    try {
+        const allTeams = await Team.findAll(); // Fixed method name
+        return res.json(allTeams);
+    } catch (err) {
+        console.error("Error retrieving teams:", err); // Added error logging
+        res.status(500).json({ error: 'Failed to retrieve teams' });
+    }
 });
 
 // GET team by number
-router.get('/:team_number', (req, res) => {
-    const team = teams.find(t => t.team_number === parseInt(req.params.team_number));
-    if (!team) return res.status(404).json({ error: 'Team not found' });
-    res.json(team);
+router.get('/:team_number', authenticateJWT, async (req, res, next) => {
+    try {
+        const team = await Team.findByTeam(req.params.team_number); // Fixed method name
+        if (!team) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+        return res.json(team);
+    } catch (err) {
+        console.error(`Error retrieving team ${req.params.team_number}:`, err); // Added error logging
+        res.status(500).json({ error: 'Failed to retrieve team' });
+    }
+
 });
 
 // POST create new team
-router.post('/', (req, res) => {
-    const { team_number, team_name, rookie_year } = req.body;
-
-    if (!team_number || !team_name) {
-        return res.status(400).json({ error: 'team_number and team_name are required' });
+router.post('/', ensureRole('admin'), async (req, res, next) => {
+    try {
+        const { team_number, team_name, rookie_year } = req.body;
+        const newTeam = await Team.create({ team_number, team_name, rookie_year });
+        return res.status(201).json(newTeam);
+    } catch (err) {
+        console.error("Error creating team:", err); // Added error logging
+        if (err instanceof BadRequestError) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: 'Failed to create team' });
+        }
     }
-
-    const newTeam = { team_number, team_name, rookie_year };
-    teams.push(newTeam);
-    res.status(201).json(newTeam);
 });
 
 // PATCH update team
-router.patch('/:team_number', (req, res) => {
-    const team = teams.find(t => t.team_number === parseInt(req.params.team_number));
-    if (!team) return res.status(404).json({ error: 'Team not found' });
+router.patch('/:team_number', ensureRole('admin'), async (req, res, next) => {
+    try {
+        const { team_name, rookie_year } = req.body;
+        const updatedTeam = await Team.update(req.params.team_number, { team_name, rookie_year });
+        if (!updatedTeam) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+        return res.json(updatedTeam);
+    } catch (err) {
+        console.error(`Error updating team ${req.params.team_number}:`, err); // Added error logging
+        if (err instanceof BadRequestError) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: 'Failed to update team' });
+        }
+    }
 
-    if (req.body.team_name) team.team_name = req.body.team_name;
-    if (req.body.rookie_year !== undefined) team.rookie_year = req.body.rookie_year;
-
-    res.json(team);
 });
 
 // DELETE team
-router.delete('/:team_number', (req, res) => {
-    const index = teams.findIndex(t => t.team_number === parseInt(req.params.team_number));
-    if (index === -1) return res.status(404).json({ error: 'Team not found' });
-
-    const deletedTeam = teams.splice(index, 1);
-    res.json(deletedTeam[0]);
+router.delete('/:team_number', ensureRole('admin'), async (req, res) => {
+    try {
+        const deletedTeam = await Team.remove(req.params.team_number);
+        if (!deletedTeam) {
+            return res.status(404).json({ error: 'Team not found' });
+        }
+        return res.json({ message: 'Team deleted successfully' });
+    } catch (err) {
+        console.error(`Error deleting team ${req.params.team_number}:`, err); // Added error logging
+        res.status(500).json({ error: 'Failed to delete team' });
+    }
 });
 
 module.exports = router;

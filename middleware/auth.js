@@ -40,6 +40,10 @@ function authenticateJWT(req, res, next) {
  * Usage in your routes:
  * router.post('/stats', ensureRole('admin'), updateStats);
  * router.post('/notes', ensureRole('scout'), addNote);
+ * 
+ * @param {string} requiredRole - The role required to access the route.
+ * @returns {function} Middleware function that checks the user's role.
+ * @throws {UnauthorizedError} If the user does not have the required role.
  */
 function ensureRole(requiredRole) {
     return (req, res, next) => {
@@ -59,6 +63,7 @@ function ensureRole(requiredRole) {
  * Middleware to ensure that the user is the same as the username in the route or an admin.
  * 
  * If not, raises Unauthorized.
+ * 
  * 
  */
 function ensureAdminOrSelf(req, res, next) {

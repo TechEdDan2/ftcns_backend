@@ -3,7 +3,7 @@
 /** Models for teams. */
 const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
-const { NotFoundError, BadRequestError } = require("../expressError");
+const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressError");
 
 
 /** Related functions for teams. */
@@ -95,7 +95,7 @@ class Team {
      * @throws {NotFoundError} If no team with the given team number is found.
      */
 
-    static async get(team_number) {
+    static async findByTeam(team_number) {
         const result = await db.query(
             `SELECT team_number,
                     team_name,

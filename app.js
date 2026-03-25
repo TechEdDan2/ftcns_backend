@@ -21,11 +21,13 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const noteRoutes = require("./routes/notes");
 const eventRoutes = require("./routes/events");
+const teamRoutes = require("./routes/teams");
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/notes", noteRoutes);
 app.use("/events", eventRoutes);
+app.use("/teams", teamRoutes);
 
 
 // Basic route for testing
