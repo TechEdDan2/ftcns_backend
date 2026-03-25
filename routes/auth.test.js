@@ -32,44 +32,6 @@ describe("POST /auth/token", function () {
         });
     });
 
-    // test("unauth with non-existent user", async function () {
-    //     const resp = await request(app)
-    //         .post("/auth/token")
-    //         .send({
-    //             username: "no-such-user",
-    //             password_hash: "password1",
-    //         });
-    //     expect(resp.statusCode).toEqual(401);
-    // });
-
-    // test("unauth with wrong password", async function () {
-    //     const resp = await request(app)
-    //         .post("/auth/token")
-    //         .send({
-    //             username: "u1",
-    //             password_hash: "nope",
-    //         });
-    //     expect(resp.statusCode).toEqual(401);
-    // });
-
-    // test("bad request with missing data", async function () {
-    //     const resp = await request(app)
-    //         .post("/auth/token")
-    //         .send({
-    //             username: "u1",
-    //         });
-    //     expect(resp.statusCode).toEqual(400);
-    // });
-
-    // test("bad request with invalid data", async function () {
-    //     const resp = await request(app)
-    //         .post("/auth/token")
-    //         .send({
-    //             username: 42,
-    //             password_hash: "above-is-a-number",
-    //         });
-    //     expect(resp.statusCode).toEqual(400);
-    // });
 });
 
 

@@ -9,6 +9,28 @@ const { NotFoundError, BadRequestError } = require("../expressError");
 /** Related functions for teams. */
 
 class Team {
+    /** 
+     * Syncs teams from the FTC API into the local database.
+     * Uses UPSERT logic to handle existing teams.
+     * @param {Array} apiTeams - An array of team objects fetched from the FTC API for a specific region.
+     * @returns {Object} An object containing the count of teams processed.
+     * 
+     */
+    static async syncTeams(apiTeams) {
+        for (let t of apiTeams) {
+            await db.query(
+                `INSERT INTO teams (team_number, team_name, rookie_year)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (team_number) 
+             DO UPDATE SET 
+                team_name = EXCLUDED.team_name,
+                rookie_year = EXCLUDED.rookie_year`,
+                [t.team_number, t.team_name, t.rookie_year]
+            );
+        }
+        return { count: apiTeams.length };
+    }
+
     /** Create a team (from data), update db, return new team data.
      *
      * data should be { team_number, team_name, rookie_year }

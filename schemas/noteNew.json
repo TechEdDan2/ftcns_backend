@@ -23,11 +23,6 @@
             "maxLength": 50,
             "description": "Event code identifier"
         },
-        "username": {
-            "type": "string",
-            "maxLength": 30,
-            "description": "Username of the scout who created the note"
-        },
         "note_title": {
             "type": "string",
             "maxLength": 255,

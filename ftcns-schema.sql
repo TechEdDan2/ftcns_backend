@@ -46,13 +46,13 @@ CREATE TABLE users (
 -- Links a user's observation to a specific team AT a specific event
 CREATE TABLE notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    team_number INTEGER NOT NULL,
-    event_code VARCHAR(50) NOT NULL,
-    username VARCHAR(50) NOT NULL,
+    team_number INTEGER NOT NULL 
+        REFERENCES teams(team_number) ON DELETE CASCADE,
+    event_code VARCHAR(50) NOT NULL 
+        REFERENCES events(event_code) ON DELETE CASCADE,
+    scout_id UUID NOT NULL 
+        REFERENCES users(id) ON DELETE CASCADE,
     note_title VARCHAR(255) NOT NULL,
     note_text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (team_number) REFERENCES teams(team_number) ON DELETE CASCADE,
-    FOREIGN KEY (event_code) REFERENCES events(event_code) ON DELETE CASCADE,
-    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

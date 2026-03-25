@@ -11,17 +11,17 @@ const {
 /**
      * Create a new note with the provided data.
      *
-     * This method inserts a new note into the database with the given title, content, team number, and author username.
+     * This method inserts a new note into the database with the given title, content, team number, and author scoutId.
      *
      * Returns an object containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }
+     *  { id, teamNumber, eventCode, scoutId, noteTitle, noteText, createdAt }
      * 
      * Throws a `BadRequestError` if the note cannot be created due to missing or invalid data.
      *
      * @param {Object} noteData - The data for the new note.
      * @param {number} noteData.teamNumber - The team number associated with the note.
      * @param {string} noteData.eventCode - The event code associated with the note.
-     * @param {string} noteData.scoutUsername - The username of the scout creating the note.
+     * @param {string} noteData.scoutId - The user id of the scout creating the note.
      * @param {string} noteData.noteTitle - The title of the note.
      * @param {string} noteData.noteText - The content of the note.
      * @returns {Object} The newly created note's details.
@@ -32,49 +32,33 @@ class Note {
     /* Related functions for notes. */
 
     // Helper method to validate note data before creation
-    static _validateNoteData({ teamNumber, eventCode, scoutUsername, noteTitle, noteText }) {
-        if (!teamNumber || typeof teamNumber !== "number") {
-            throw new BadRequestError("Invalid or missing team number.");
-        }
-        if (!eventCode || typeof eventCode !== "string" || eventCode.trim() === "") {
-            throw new BadRequestError("Invalid or missing event code.");
-        }
-        if (!scoutUsername || typeof scoutUsername !== "string" || scoutUsername.trim() === "") {
-            throw new BadRequestError("Invalid or missing scout username.");
-        }
-        if (!noteTitle || typeof noteTitle !== "string" || noteTitle.trim() === "") {
-            throw new BadRequestError("Invalid or missing note title.");
-        }
-        if (!noteText || typeof noteText !== "string" || noteText.trim() === "") {
-            throw new BadRequestError("Invalid or missing note text.");
+    static _validateNoteData({ teamNumber, eventCode, scoutId, noteTitle, noteText }) {
+        if (!teamNumber || !eventCode || !scoutId || !title || !noteText) {
+            throw new BadRequestError("Missing required note data.");
         }
     }
 
-    static async create({ teamNumber, eventCode, scoutUsername, noteTitle, noteText }) {
+    /**
+     * Create a new note with the provided data. 
+     * @param {Object} noteData - The data for the new note.
+     * @returns {Object} The newly created note's details. 
+     */
+    static async create({ teamNumber, eventCode, scoutId, noteTitle, noteText }) {
         // Validate input data
-        this._validateNoteData({ teamNumber, eventCode, scoutUsername, noteTitle, noteText });
-
-        // Get scout ID from username
-        const scoutResult = await db.query(
-            `SELECT id FROM users WHERE username = $1`,
-            [scoutUsername]
-        );
-
-        const scout = scoutResult.rows[0];
-        if (!scout) {
-            throw new BadRequestError(`No user found with username: ${scoutUsername}`);
-        }
-
+        this._validateNoteData({ teamNumber, eventCode, scoutId, noteTitle, noteText });
 
         // Insert the new note into the database
         const result = await db.query(
-            `INSERT INTO notes (team_number, event_code, username, note_title, note_text)
+            `INSERT INTO notes (team_number, event_code, scout_id, note_title, note_text)
              VALUES ($1, $2, $3, $4, $5)
              RETURNING id, 
-                team_number AS "teamNumber", event_code AS "eventCode",
-                username, 
-                note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"`,
-            [teamNumber, eventCode, username, noteTitle, noteText]
+                team_number AS "teamNumber", 
+                event_code AS "eventCode",
+                 scout_id AS "scoutId", 
+                note_title AS "noteTitle", 
+                note_text AS "noteText", 
+                created_at AS "createdAt"`,
+            [teamNumber, eventCode, scoutId, noteTitle, noteText]
         );
 
         const note = result.rows[0];
@@ -82,22 +66,22 @@ class Note {
     }
 
     /**
-     * The `findAll` method retrieves all notes from the database, ordered by creation date in descending order.
-     *
-     * Returns an array of note objects, each containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }  
-     * 
-     * @returns {Array} An array of all notes in the database.
-     */
+     * Retrieves all notes, JOINING with users to get the username.
+     * Returns: [{ id, teamNumber, eventCode, username, title, noteText, createdAt }, ...]
+    */
     static async findAll() {
         const result = await db.query(
-            `SELECT id, 
-                team_number AS "teamNumber", event_code AS "eventCode", username, 
-                note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"
-             FROM notes
-             ORDER BY created_at DESC`
+            `SELECT n.id, 
+                    n.team_number AS "teamNumber", 
+                    n.event_code AS "eventCode", 
+                    u.username, 
+                    n.note_title, 
+                    n.note_text AS "noteText", 
+                    n.created_at AS "createdAt"
+             FROM notes n
+             JOIN users u ON n.scout_id = u.id
+             ORDER BY n.created_at DESC`
         );
-
         return result.rows;
     }
 
@@ -107,7 +91,7 @@ class Note {
      * This method retrieves all notes associated with a specific team number, regardless of the event.
      * 
      * Returns an array of note objects, each containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }  
+     *  { id, teamNumber, eventCode, scout_id, noteTitle, noteText, createdAt }  
      * 
      * @param {number} teamNumber - The team number to filter notes by.
      * @returns {Array} An array of notes matching the team number.
@@ -116,8 +100,12 @@ class Note {
     static async findByTeam(teamNumber) {
         const result = await db.query(
             `SELECT id, 
-                team_number AS "teamNumber", event_code AS "eventCode", username, 
-                note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"
+                team_number AS "teamNumber", 
+                event_code AS "eventCode", 
+                scout_id AS "scoutId", 
+                note_title AS "noteTitle", 
+                note_text AS "noteText", 
+                created_at AS "createdAt"
              FROM notes
              WHERE team_number = $1
              ORDER BY created_at DESC`,
@@ -135,7 +123,7 @@ class Note {
      * This method retrieves all notes associated with a specific team number and event code.
      *
      * Returns an array of note objects, each containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }
+     *  { id, teamNumber, eventCode, scout_id, noteTitle, noteText, createdAt }
      * 
      * Throws a `NotFoundError` if no notes are found for the specified team and event.
      *
@@ -149,8 +137,12 @@ class Note {
     static async findByTeamAndEvent(teamNumber, eventCode) {
         const result = await db.query(
             `SELECT id, 
-                team_number AS "teamNumber", event_code AS "eventCode", username, 
-                note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"
+                team_number AS "teamNumber", 
+                event_code AS "eventCode", 
+                scout_id AS "scoutId", 
+                note_title AS "noteTitle", 
+                note_text AS "noteText", 
+                created_at AS "createdAt"
              FROM notes
              WHERE team_number = $1 AND event_code = $2
              ORDER BY created_at DESC`,
@@ -173,7 +165,7 @@ class Note {
      * This method retrieves a single note based on its unique ID.
      * 
      * Returns an object containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }
+     *  { id, teamNumber, eventCode, scoutId, noteTitle, noteText, createdAt }
      * 
      * Throws a `NotFoundError` if no note is found with the specified ID.
      * 
@@ -184,11 +176,16 @@ class Note {
 
     static async findById(id) {
         const result = await db.query(
-            `SELECT id, 
-                team_number AS "teamNumber", event_code AS "eventCode", username, 
-                note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"
-             FROM notes
-             WHERE id = $1`,
+            `SELECT n.id, 
+                    n.team_number AS "teamNumber", 
+                    n.event_code AS "eventCode", 
+                    u.username, 
+                    n.note_title, 
+                    n.note_text AS "noteText", 
+                    n.created_at AS "createdAt"
+             FROM notes n
+             JOIN users u ON n.scout_id = u.id
+             WHERE n.id = $1`,
             [id]
         );
 
@@ -207,7 +204,7 @@ class Note {
      * This method allows updating the title and text of a note based on its unique ID.
      * 
      * Returns an object containing:
-     *  { id, teamNumber, eventCode, username, noteTitle, noteText, createdAt }
+     *  { id, teamNumber, eventCode, scoutId, noteTitle, noteText, createdAt }
      * 
      * Throws a `NotFoundError` if no note is found with the specified ID.
      * 
@@ -235,7 +232,11 @@ class Note {
                           WHERE id = ${idVarIdx} 
                           RETURNING id, 
                                 team_number AS "teamNumber", 
-                                event_code AS "eventCode", username, note_title AS "noteTitle", note_text AS "noteText", created_at AS "createdAt"`;
+                                event_code AS "eventCode", 
+                                scout_id AS "scoutId", 
+                                note_title AS "noteTitle", 
+                                note_text AS "noteText", 
+                                created_at AS "createdAt"`;
         const result = await db.query(querySql, [...values, id]);
         const note = result.rows[0];
 

@@ -1,5 +1,35 @@
 const axios = require('axios');
 
+/** 
+ * Fetches all teams by a given region code and season from the FTC API.
+ * @param {number} season - e.g., 2026
+ * @param {string} regionCode - e.g., 'USNYLI'
+ * @returns {Array} An array of team objects with team_number, team_name, and rookie_year.  
+ */
+async function fetchTeamsByRegion(season, regionCode) {
+    try {
+        const response = await axios.get(
+            `https://ftc-events.firstinspires.org/v2.0/${season}/teams`,
+            {
+                params: { regionCode: regionCode },
+                headers: {
+                    'Authorization': `Basic ${process.env.API_KEY_BASE64}`
+                }
+            }
+        );
+
+        // The API returns { teams: [...], teamCount: X }
+        return response.data.teams.map(t => ({
+            team_number: t.teamNumber,
+            team_name: t.nameShort || t.nameFull,
+            rookie_year: t.rookieYear
+        }));
+    } catch (err) {
+        console.error("FTC API Error:", err.message);
+        throw new Error("Failed to fetch teams from FTC API");
+    }
+}
+
 /**
  * Fetches all event listings for a given season and region code.
  * @param {number} season - e.g., 2026
@@ -18,7 +48,10 @@ async function fetchEventsByRegion(season, regionCode) {
         );
 
         // Map the results to return just the Event Codes (IDs)
-        return response.data.events.map(event => event.eventCode);
+        // return response.data.events.map(event => event.eventCode);
+
+        // Returns the full event objects instead of just codes
+        return response.data.events;
     } catch (error) {
         console.error(`Error fetching events for region ${regionCode}:`, error.message);
         throw new Error("Failed to fetch event listings from FTC API");
