@@ -49,6 +49,11 @@ router.get('/team/:team_number', authenticateJWT, async (req, res, next) => {
 // POST /notes - create a new note
 router.post('/', ensureAdminOrSelf, async (req, res, next) => {
     try {
+        const { teamNumber, eventCode, scoutId, noteTitle, noteText } = req.body;
+
+        console.log("Request Body:", req.body);
+        console.log("Validated Data:", { teamNumber, eventCode, scoutId, noteTitle, noteText });
+
         const validator = jsonschema.validate(req.body, noteNewSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);

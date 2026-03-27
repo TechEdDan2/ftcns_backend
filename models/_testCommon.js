@@ -3,9 +3,9 @@ const bcrypt = require('bcryptjs');
 const { BCRYPT_WORK_FACTOR } = require("../config");
 const { createToken } = require("../helpers/tokens");
 
-const { db } = require("../db.js");
-const { User } = require("./user.js");
-const { Note } = require("./note.js");
+const db = require("../db.js");
+const User = require("./user.js");
+const Note = require("./note.js");
 
 const fakeNoteIds = [];
 
@@ -15,13 +15,13 @@ async function commonBeforeAll() {
     await db.query("DELETE FROM notes");
 
     await User.register({
-        username: "scout1",
+        username: "testscout1",
         password: "password1",
         role: "scout",
     });
 
     await User.register({
-        username: "scout2",
+        username: "testscout2",
         password: "password2",
         role: "scout",
     });
@@ -46,7 +46,7 @@ async function commonBeforeAll() {
 }
 
 async function commonBeforeEach() {
-    await db.quesry("BEGIN");
+    await db.query("BEGIN");
 }
 
 async function commonAfterEach() {

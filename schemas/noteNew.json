@@ -2,11 +2,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "team_number",
-        "event_code",
-        "username",
-        "note_title",
-        "note_text"
+        "teamNumber",
+        "eventCode",
+        "scoutId",
+        "noteTitle",
+        "noteText"
     ],
     "properties": {
         "id": {
@@ -14,25 +14,30 @@
             "format": "uuid",
             "description": "Unique identifier for the note"
         },
-        "team_number": {
+        "teamNumber": {
             "type": "integer",
             "description": "Team number associated with the note"
         },
-        "event_code": {
+        "eventCode": {
             "type": "string",
             "maxLength": 50,
             "description": "Event code identifier"
         },
-        "note_title": {
+        "scoutId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the scout creating the note"
+        },
+        "noteTitle": {
             "type": "string",
             "maxLength": 255,
             "description": "Title of the note"
         },
-        "note_text": {
+        "noteText": {
             "type": "string",
             "description": "Content of the note"
         },
-        "created_at": {
+        "createdAt": {
             "type": "string",
             "format": "date-time",
             "description": "Timestamp when the note was created"

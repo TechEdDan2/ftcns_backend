@@ -33,7 +33,13 @@ class Note {
 
     // Helper method to validate note data before creation
     static _validateNoteData({ teamNumber, eventCode, scoutId, noteTitle, noteText }) {
-        if (!teamNumber || !eventCode || !scoutId || !title || !noteText) {
+        if (
+            teamNumber === null || teamNumber === undefined ||
+            !eventCode ||
+            !scoutId ||
+            !noteTitle ||
+            !noteText
+        ) {
             throw new BadRequestError("Missing required note data.");
         }
     }
