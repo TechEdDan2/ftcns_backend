@@ -13,7 +13,7 @@ const { fetchEventsByRegion, fetchTeamsByRegion } = require('./ftcAPI');
  */
 async function runWeeklyRegionalSync() {
     const region = 'USNYLI';
-    const season = 2026;
+    const season = 2025;
 
     console.log(`---Starting Weekly Sync for Region: ${region} ---`);
 
@@ -38,6 +38,7 @@ async function runWeeklyRegionalSync() {
             console.warn("No teams found in API response. Skipping team sync.");
         }
 
+
         console.log("--- Weekly Regional Sync Complete ---");
     } catch (err) {
         // This catch block now handles actual API failures (404, 500, etc.)
@@ -58,7 +59,7 @@ function startCronJobs() {
 
     // For Testing immediately run the sync when 
     //  the server restarts during development.
-    // runWeeklyRegionalSync(); 
+    // runWeeklyRegionalSync();
 }
 
 module.exports = startCronJobs;

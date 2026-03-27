@@ -8,7 +8,7 @@ const debug = require("debug")("ftcns_db");
 const startCronJobs = require("./helpers/cron");
 
 // Start cron jobs for periodic tasks (e.g., syncing with FTC API)
-// startCronJobs();
+startCronJobs();
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

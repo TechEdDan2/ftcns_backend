@@ -4,8 +4,6 @@ const db = require("../db");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const {
     NotFoundError,
-    BadRequestError,
-    UnauthorizedError,
 } = require("../expressError");
 
 /** 
@@ -47,7 +45,7 @@ class Event {
                     e.name,        // Mapping API 'name' to 'event_name'
                     e.dateStart,   // Mapping API 'dateStart' to 'event_date'
                     e.city,
-                    e.stateProv    // Mapping API 'stateProv' to 'state_prov'
+                    e.stateprov    // Mapping API 'stateProv' to 'state_prov'
                 ]
             );
         }
