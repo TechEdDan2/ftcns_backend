@@ -9,7 +9,7 @@ CREATE TABLE events (
     event_date DATE,
     city VARCHAR(100),
     state_prov VARCHAR(50),
-    is_active BOOLEAN DEFAULT TRUE     -- Helpful for filtering current tournaments
+    is_active BOOLEAN DEFAULT FALSE     -- Helpful for filtering current tournaments
 );
 
 -- 2. TEAMS: Stores general team info from FTC API  
