@@ -16,6 +16,22 @@ const router = express.Router();
 // Mock database - replace with actual database calls
 let teams = [];
 
+// POST create new team
+router.post('/', ensureRole('admin'), async (req, res, next) => {
+    try {
+        const { team_number, team_name, rookie_year } = req.body;
+        const newTeam = await Team.create({ team_number, team_name, rookie_year });
+        return res.status(201).json(newTeam);
+    } catch (err) {
+        console.error("Error creating team:", err); // Added error logging
+        if (err instanceof BadRequestError) {
+            res.status(400).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: 'Failed to create team' });
+        }
+    }
+});
+
 // GET all teams
 router.get('/', authenticateJWT, async (req, res, next) => {
     try {
@@ -26,6 +42,7 @@ router.get('/', authenticateJWT, async (req, res, next) => {
         res.status(500).json({ error: 'Failed to retrieve teams' });
     }
 });
+
 
 // GET team by number
 router.get('/:team_number', authenticateJWT, async (req, res, next) => {
@@ -42,19 +59,14 @@ router.get('/:team_number', authenticateJWT, async (req, res, next) => {
 
 });
 
-// POST create new team
-router.post('/', ensureRole('admin'), async (req, res, next) => {
+// GET teams by filter criteria
+router.get('/filter', authenticateJWT, async (req, res, next) => {
     try {
-        const { team_number, team_name, rookie_year } = req.body;
-        const newTeam = await Team.create({ team_number, team_name, rookie_year });
-        return res.status(201).json(newTeam);
+        const filterObj = req.query;
+        const filteredTeams = await Team.findByFilter(filterObj);
+        return res.json({ teams: filteredTeams });
     } catch (err) {
-        console.error("Error creating team:", err); // Added error logging
-        if (err instanceof BadRequestError) {
-            res.status(400).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: 'Failed to create team' });
-        }
+        return next(err);
     }
 });
 

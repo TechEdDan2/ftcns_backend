@@ -4,7 +4,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 const router = new express.Router();
 
-const { ensureRole, ensureLoggedIn, ensureAdminOrSelf } = require("../middleware/auth");
+const { ensureRole, authenticateJWT, ensureAdminOrSelf } = require("../middleware/auth");
 
 const { BadRequestError, NotFoundError } = require("../expressError");
 
@@ -58,10 +58,11 @@ router.get("/", ensureRole("admin"), async function (req, res, next) {
  *
  * Returns { username, role}
  *
+ * router.get("/:username", authenticateJWT, async function (req, res, next) 
  * Authorization required: admin or same user
  */
 
-router.get("/:username", ensureAdminOrSelf, async function (req, res, next) {
+router.get("/:username", authenticateJWT, ensureAdminOrSelf, async function (req, res, next) {
     try {
         const user = await User.get(req.params.username);
         if (!user) throw new NotFoundError();

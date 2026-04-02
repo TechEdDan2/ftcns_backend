@@ -130,11 +130,11 @@ class User {
 
     /** Given a username, return data about user.
      *
-     * This method fetches the user's details and their associated applications.
+     * This method fetches the user's details and their associated notes.
      *
      * Returns an object containing:
-     *   { username, role, isAdmin, apps }
-     * where `apps` is an array of job IDs the user has applied for.
+     *   { username, role, isAdmin, notes }
+     * where `notes` is an array of note objects.
      *
      * Throws a `NotFoundError` if the user does not exist.
      *
@@ -145,8 +145,9 @@ class User {
 
     static async get(username) {
         const userRes = await db.query(
-            `SELECT username,
-                  role
+            `SELECT id, 
+                    username,
+                    role
            FROM users
            WHERE username = $1`,
             [username],
@@ -156,14 +157,18 @@ class User {
 
         if (!user) throw new NotFoundError(`No user: ${username}`);
 
-        //Add a object key like the company model
-        const resUserApps = await db.query(
-            `SELECT a.job_id
-      FROM applications AS a
-      WHERE a.username = $1`, [username]
+        // Fetch notes associated with the current username
+        const resUserNotes = await db.query(
+            `SELECT n.id,
+                    n.team_number AS teamNumber, 
+                    n.note_title AS title, 
+                    n.note_text AS content, 
+                    n.created_at
+             FROM notes AS n
+             WHERE n.scout_id = $1`, [user.id]
         );
 
-        user.apps = resUserApps.rows.map(a => a.job_id);
+        user.notes = resUserNotes.rows;
 
         return user;
     }

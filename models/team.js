@@ -112,6 +112,62 @@ class Team {
         return team;
     }
 
+    /** 
+     * Find teams that match filter criteria.
+     * 
+     * @param {Object} filterObj - An object containing filter criteria (e.g., { nameLike: "Tech", rookieYear: 2020 }).
+     * @returns {Array} An array of teams that match the filter criteria.
+     * @throws {NotFoundError} If no teams match the filter criteria.
+     */
+    static async findByFilter(filterObj) {
+        if (Object.keys(filterObj).length === 0) {
+            return await this.findAll();
+        }
+
+        //Update later to handle more complex filters (e.g. rookie_year range)
+
+        // Build query
+        let qString = `SELECT team_number, team_name, rookie_year FROM teams `;
+
+        // Add WHERE clauses based on filterObj
+        let where = [];
+
+        // Create an array of values for parameterized query
+        let values = [];
+
+        //Check nameLike filter then add to WHERE clause and values array
+        if (filterObj.nameLike !== undefined) {
+            values.push(`%${filterObj.nameLike}%`);
+            where.push(`team_name ILIKE $${values.length}`);
+        }
+
+        // Check rookieYear filter then add to WHERE clause and values array
+        if (filterObj.rookieYear !== undefined) {
+            values.push(filterObj.rookieYear);
+            where.push(`rookie_year = $${values.length}`);
+        }
+
+        // If WHERE conditions, add them to the query string
+        if (where.length > 0) {
+            qString += "WHERE " + where.join(" AND ");
+        }
+
+        // Finalize query with ORDER BY
+        qString += " ORDER BY team_number";
+
+        // Execute the query passing in the values array to prevent SQL injection
+        const result = await db.query(qString, values);
+
+        // check 
+        const filteredTeams = result.rows;
+        if (filteredTeams.length === 0) {
+            throw new NotFoundError("No teams found matching criteria");
+        }
+
+        // Return the filtered teams
+        return result.rows;
+    }
+
     /** Update team data with `data`.
      *
      * This is a "partial update" --- it's fine if data doesn't contain all the
