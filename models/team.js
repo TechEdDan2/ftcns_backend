@@ -96,6 +96,11 @@ class Team {
      */
 
     static async findByTeam(team_number) {
+        // Validate that team_number is a valid integer
+        if (!Number.isInteger(Number(team_number))) {
+            throw new BadRequestError(`Invalid team number: ${team_number}`);
+        }
+
         const result = await db.query(
             `SELECT team_number,
                     team_name,
@@ -127,7 +132,10 @@ class Team {
         //Update later to handle more complex filters (e.g. rookie_year range)
 
         // Build query
-        let qString = `SELECT team_number, team_name, rookie_year FROM teams `;
+        let qString = `SELECT team_number AS teamNumber,
+                        team_name AS teamName, 
+                        rookie_year AS rookieYear 
+                        FROM teams `;
 
         // Add WHERE clauses based on filterObj
         let where = [];
