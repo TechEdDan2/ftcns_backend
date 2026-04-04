@@ -14,7 +14,7 @@
 ## Overview
 This is the backend for the FTC Note Scout app (FTCNS), a web application that allows users to create and manage notes about FIRST Tech Challenge teams during Season events. The backend is built with Node.js and Express, and it uses PostgreSQL for data storage. The API provides endpoints for creating, retrieving, updating, and deleting notes. 
 
-For this first version of the app, the backend focuses on core note management features and user authentication. It is also focused on the USNYLI region. Future versions will include more advanced features such as team and event data integration, analytics, and enhanced user profiles.
+For this first version of the app, the backend focuses on core note management features and user authentication. It is also focused on the USNYLI region. Future versions will include more advanced features such as team and event data integration, analytics, and enhanced user profiles. Personal Identifiable Information (PII) is not stored in the database, and the minimal user data (username and password) is protected with secure authentication and authorization mechanisms. 
 
 ### Features
 - User Authentication: Users can register and log in to the app securely using JWT tokens.
@@ -24,6 +24,9 @@ For this first version of the app, the backend focuses on core note management f
 
 ### Future Improvements
 - Team and Event Data Integration: Integrate data from the FTC API during live events to provide users with up-to-date information about teams and matches.
+- Visibilty Settings: Allow users to set visibility settings for their notes (e.g., private, team-only, public).
+- Possible Approval System: Implement an approval system for public notes to ensure quality and relevance.
+- Expand to Other Regions: Expand the app to support teams and events from other regions beyond USNYLI.
 
 ## Built With
 - Node.js
@@ -41,8 +44,15 @@ For this first version of the app, the backend focuses on core note management f
 - node-cron (for scheduling tasks)
 
 ## Getting Started
+These instructions will help you set up a local copy of the project for development and testing purposes. 
 
 ### Setup Instructions
+To get a local copy of the project up and running, follow these steps:
+1. Clone the repository
+2. Install dependencies - Due to all of the npm issues recently in the news, I recommend using `npm ci` instead of `npm install` to ensure a clean and consistent installation of dependencies. This command will install the exact versions of dependencies specified in the package-lock.json file, which can help avoid potential issues with mismatched versions. I would also recommend reviewing other best practices for npm, such as using a .npmrc file to set strict versioning and avoiding the use of `npm update` without careful consideration.
+3. Set up environment variables
+4. Run the server
+
 
 ## Routes
 - `POST /auth/register`: Register a new user.
@@ -62,7 +72,7 @@ For this first version of the app, the backend focuses on core note management f
 - Frontend Mentor - [@TechEdDan2](https://www.frontendmentor.io/profile/TechEdDan2)
 
 ## Acknowledgments
-The YouTubers and other educational resources I have been learning from include: Coder Coder (Jessica Chan), BringYourOwnLaptop (Daniel Walter Scott), Kevin Powell, Dipesh Malvia (Scheduling Tasks - Cron Jobs), vairous Udemy courses, Geeks for Geeks, Stack Overflow, and Stony Brook University's Software Engineering Bootcamp (curriculum developed by Colt Steele) 
+The YouTubers and other educational resources I have been learning from include: Coder Coder (Jessica Chan), BringYourOwnLaptop (Daniel Walter Scott), Kevin Powell, Dipesh Malvia (Scheduling Tasks - Cron Jobs), NetworkChuck, Fireship (recent npm security issues), vairous Udemy courses, Geeks for Geeks, Stack Overflow, StepSecurity.io, Socket.dev, and Stony Brook University's Software Engineering Bootcamp (curriculum developed by Colt Steele) 
 
 ## License
 This project is licensed under the ISC license

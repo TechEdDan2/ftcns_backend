@@ -114,6 +114,25 @@ class Team {
 
         if (!team) throw new NotFoundError(`No team: ${team_number}`);
 
+        // Fetch notes associated with the team
+        const resTeamNotes = await db.query(
+            `SELECT n.id,
+                    n.scout_id AS scoutID,
+                    n.team_number AS teamNumber,
+                    n.note_title AS title,
+                    n.note_text AS content,
+                    n.created_at
+                FROM notes AS n 
+                WHERE n.team_number = $1`, [team.team_number]
+        );
+
+        // Check if notes were found and log a warning if none exist
+        if (resTeamNotes.rows.length === 0) {
+            console.warn(`No notes found for team number: ${team.team_number}`);
+        }
+
+        team.notes = resTeamNotes.rows;
+
         return team;
     }
 
