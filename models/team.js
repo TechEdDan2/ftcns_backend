@@ -148,6 +148,9 @@ class Team {
             return await this.findAll();
         }
 
+        //Debug logs to see what is in the filterObj
+        console.log("Filter object received in findByFilter:", filterObj);
+
         //Update later to handle more complex filters (e.g. rookie_year range)
 
         // Build query
@@ -172,6 +175,12 @@ class Team {
         if (filterObj.rookieYear !== undefined) {
             values.push(filterObj.rookieYear);
             where.push(`rookie_year = $${values.length}`);
+        }
+
+        // Check teamNumberLike filter then add to WHERE clause and values array
+        if (filterObj.teamNumberLike !== undefined) {
+            values.push(`%${filterObj.teamNumberLike}%`);
+            where.push(`CAST(team_number AS TEXT) ILIKE $${values.length}`);
         }
 
         // If WHERE conditions, add them to the query string

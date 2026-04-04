@@ -63,12 +63,54 @@ router.get('/:team_number', authenticateJWT, async (req, res, next) => {
 router.get('/filter', authenticateJWT, async (req, res, next) => {
     try {
         const filterObj = req.query;
+
+        console.log("Incoming query:", req.query);
+
         const filteredTeams = await Team.findByFilter(filterObj);
+        console.log("Constructed filter object:", filterObj);
+        console.log("Filtered teams result:", filteredTeams);
+
         return res.json({ teams: filteredTeams });
     } catch (err) {
         return next(err);
     }
 });
+// GET teams by filter criteria v2
+// router.get('/filter', authenticateJWT, async (req, res, next) => {
+//     try {
+//         const { term, type } = req.query;
+
+//         // Validate the search type
+//         if (!type || !['teams', 'notes'].includes(type)) {
+//             throw new BadRequestError(`Invalid search type: ${type}`);
+//         }
+
+//         // Validate the search term
+//         if (!term || typeof term !== 'string' || !term.trim()) {
+//             throw new BadRequestError(`Invalid search term: ${term}`);
+//         }
+
+//         let filterObj = {};
+//         if (type === 'teams') {
+//             // If searching for teams, ensure the term is numeric
+//             if (isNaN(term)) {
+//                 throw new BadRequestError(`Invalid team number: ${term}`);
+//             }
+//             filterObj.teamNumberLike = parseInt(term, 10);
+//         } else if (type === 'notes') {
+//             // If searching for notes, use the term as a text filter
+//             filterObj.nameLike = term;
+//         }
+
+//         console.log("Incoming query:", req.query);
+//         console.log("Constructed filter object:", filterObj);
+
+//         const filteredTeams = await Team.findByFilter(filterObj);
+//         return res.json({ teams: filteredTeams });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
 
 // PATCH update team
 router.patch('/:team_number', ensureRole('admin'), async (req, res, next) => {
