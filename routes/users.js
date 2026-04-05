@@ -81,16 +81,20 @@ router.get("/:username", authenticateJWT, ensureAdminOrSelf, async function (req
  * Authorization required: admin or same user
  */
 
-router.patch("/:username", ensureAdminOrSelf, async function (req, res, next) {
+router.patch("/:username", authenticateJWT, ensureAdminOrSelf, async function (req, res, next) {
     try {
+        // Check for empty update
+        if (Object.keys(req.body).length === 0) {
+            throw new BadRequestError("No data provided for update.");
+        }
         const validator = jsonschema.validate(req.body, userUpdateSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
 
-        const user = await User.update(req.params.username, req.body);
-        return res.json({ user });
+        const { user, token } = await User.update(req.params.username, req.body);
+        return res.json({ user, token });
     } catch (err) {
         return next(err);
     }

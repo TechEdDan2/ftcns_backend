@@ -18,9 +18,6 @@
             "description": "The password of the user, must be 5-40 characters long and contain at least one letter and one number."
         }
     },
-    "required": [
-        "username",
-        "password"
-    ],
+    "required": [],
     "additionalProperties": false
 }

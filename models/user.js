@@ -10,6 +10,7 @@ const {
 } = require("../expressError");
 
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
+const { createToken } = require("../helpers/tokens");
 
 /** Related functions for users. */
 
@@ -206,7 +207,8 @@ class User {
         const { setCols, values } = sqlForPartialUpdate(
             data,
             {
-                role: "role",
+                username: "username",
+                //role: "role",
             });
         const usernameVarIdx = "$" + (values.length + 1);
 
@@ -220,7 +222,10 @@ class User {
 
         if (!user) throw new NotFoundError(`No user: ${username}`);
 
-        return user;
+        const token = createToken(user);
+        user.token = token;
+
+        return { user, token };
     }
 
     /** Delete a user from the database.
