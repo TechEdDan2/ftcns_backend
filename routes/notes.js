@@ -70,6 +70,11 @@ router.post('/', ensureAdminOrSelf, async (req, res, next) => {
 // PATCH /notes/:id - update a note by id only by the author or an admin
 router.patch('/:id', authenticateJWT, ensureAdminOrSelf, async (req, res, next) => {
     try {
+        const { teamNumber, eventCode, scoutId, noteTitle, noteText } = req.body;
+
+        console.log("Request Body:", req.body);
+        console.log("Validated Data:", { teamNumber, eventCode, scoutId, noteTitle, noteText });
+
         const validator = jsonschema.validate(req.body, noteUpdateSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
