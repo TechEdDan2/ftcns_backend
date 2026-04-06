@@ -68,7 +68,7 @@ router.post('/', ensureAdminOrSelf, async (req, res, next) => {
 });
 
 // PATCH /notes/:id - update a note by id only by the author or an admin
-router.patch('/:id', ensureAdminOrSelf, async (req, res, next) => {
+router.patch('/:id', authenticateJWT, ensureAdminOrSelf, async (req, res, next) => {
     try {
         const validator = jsonschema.validate(req.body, noteUpdateSchema);
         if (!validator.valid) {
