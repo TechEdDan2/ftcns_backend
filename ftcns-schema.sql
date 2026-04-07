@@ -19,21 +19,7 @@ CREATE TABLE teams (
     rookie_year INTEGER
 );
 
--- 3. EVENT_TEAMS: Bridge table (Many-to-Many) 
--- Populated by fetching the team list for a specific event
--- CREATE TABLE event_teams (
---     event_code VARCHAR(50) REFERENCES events(event_code) ON DELETE CASCADE,
---     team_number INTEGER REFERENCES teams(team_number) ON DELETE CASCADE,
---     -- Performance snapshot update with sync from FTC API
---     event_rank INTEGER,
---     wins INTEGER DEFAULT 0,
---     losses INTEGER DEFAULT 0,
---     ties INTEGER DEFAULT 0,
---     last_api_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     PRIMARY KEY (event_code, team_number)
--- );
-
--- 4. USERS: App users (Admins and Scouts)
+-- 3. USERS: App users (Admins and Scouts)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -42,7 +28,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. NOTES: main feature of the scouting app
+-- 4. NOTES: main feature of the scouting app
 -- Links a user's observation to a specific team AT a specific event
 CREATE TABLE notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
