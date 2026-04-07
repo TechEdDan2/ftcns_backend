@@ -5,7 +5,7 @@ node_modules/
 .env
 
 # Ignore Config files which may contain sensitive information
-config.js
+# config.js
 config.test.js
 
 # Ignore macOS system files
@@ -23,7 +23,7 @@ build/
 coverage/
 
 # Ignore the ftcns-seed.sql file which may contain sensitive data
-# ftcns-seed.sql
+ftcns-seed.sql
 
 # Ignore the encodeApiKey.js file which may contain sensitive information
 eak.js
