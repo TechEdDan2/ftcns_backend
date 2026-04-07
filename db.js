@@ -1,24 +1,27 @@
 "use strict";
-/** Database setup for jobly. */
+
 const { Client } = require("pg");
-const { getDatabaseUri, getSslConfig } = require("./config");
+const { getDatabaseUri } = require("./config");
 
-let db;
+const connectionString = getDatabaseUri();
 
-if (process.env.NODE_ENV === "production") {
-    db = new Client({
-        connectionString: getDatabaseUri(),
-        ssl: {
-            rejectUnauthorized: false
-        }
-    });
-} else {
-    db = new Client({
-        connectionString: getDatabaseUri(),
-        ssl: getSslConfig(),
-    });
+// Create the config object
+const dbConfig = {
+    connectionString: connectionString,
+};
+
+// If we are on Render OR the URL points to a cloud database (contains 'render' or 'aws')
+// we MUST use SSL.
+if (process.env.NODE_ENV === "production" || connectionString.includes("render.com")) {
+    dbConfig.ssl = {
+        rejectUnauthorized: false
+    };
 }
 
-db.connect();
+const db = new Client(dbConfig);
+
+db.connect()
+    .then(() => console.log("Connected to PostgreSQL successfully!"))
+    .catch(err => console.error("Connection error:", err.stack));
 
 module.exports = db;
