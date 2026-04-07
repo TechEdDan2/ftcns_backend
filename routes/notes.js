@@ -70,23 +70,44 @@ router.post('/', ensureAdminOrSelf, async (req, res, next) => {
 // PATCH /notes/:id - update a note by id only by the author or an admin
 router.patch('/:id', authenticateJWT, ensureAdminOrSelf, async (req, res, next) => {
     try {
-        const { teamNumber, eventCode, scoutId, noteTitle, noteText } = req.body;
-
-        console.log("Request Body:", req.body);
-        console.log("Validated Data:", { teamNumber, eventCode, scoutId, noteTitle, noteText });
-
         const validator = jsonschema.validate(req.body, noteUpdateSchema);
         if (!validator.valid) {
-            const errs = validator.errors.map(e => e.stack);
-            throw new BadRequestError(errs);
+            throw new BadRequestError(validator.errors.map(e => e.stack));
         }
 
-        const note = await Note.update(req.params.id, req.body);
+        // Only allow updating these specific fields
+        const { noteTitle, noteText } = req.body;
+        const updateData = {};
+        if (noteTitle !== undefined) updateData.noteTitle = noteTitle;
+        if (noteText !== undefined) updateData.noteText = noteText;
+
+        const note = await Note.update(req.params.id, updateData);
         return res.json({ note });
     } catch (err) {
         return next(err);
     }
 });
+
+// OLD 
+// router.patch('/:id', authenticateJWT, ensureAdminOrSelf, async (req, res, next) => {
+//     try {
+//         const { noteTitle, noteText } = req.body;
+
+//         console.log("Request Body:", req.body);
+//         console.log("Validated Data:", { noteTitle, noteText });
+
+//         const validator = jsonschema.validate(req.body, noteUpdateSchema);
+//         if (!validator.valid) {
+//             const errs = validator.errors.map(e => e.stack);
+//             throw new BadRequestError(errs);
+//         }
+
+//         const note = await Note.update(req.params.id, { noteTitle, noteText });
+//         return res.json({ note });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
 
 // DELETE /notes/:id - delete a note by id only by the author or an admin
 router.delete('/:id', ensureAdminOrSelf, async (req, res, next) => {
