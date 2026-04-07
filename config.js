@@ -21,7 +21,7 @@ function getDatabaseUri() {
         : (process.env.DATABASE_URL || "postgresql:///ftcns_db");
 }
 
-function getSslConfig => () {
+const getSslConfig = () => {
     return isProduction ? { rejectUnauthorized: false } : false;
 };
 
