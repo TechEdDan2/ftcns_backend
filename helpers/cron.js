@@ -53,9 +53,9 @@ async function runWeeklyRegionalSync() {
 function startCronJobs() {
     console.log("Cron Service Initialized...");
 
-    // Schedule: Every Sunday at 00:00 (Midnight)
+    // Schedule: Every Day at 00:00 (Midnight)
     // Pattern: [Minute] [Hour] [Day of Month] [Month] [Day of Week]
-    cron.schedule('0 0 * * 0', runWeeklyRegionalSync);
+    cron.schedule('0 0 * * *', runWeeklyRegionalSync);
 
     // For Testing immediately run the sync when 
     //  the server restarts during development.
